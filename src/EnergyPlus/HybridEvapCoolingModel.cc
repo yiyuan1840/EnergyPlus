@@ -1247,7 +1247,7 @@ namespace HybridEvapCoolingModel {
 
         // SUBROUTINE LOCAL VARIABLE DECLARATIONS:
         bool DidWeMeetLoad = false;
-        bool DidWeMeetHumidificaiton = false;
+        bool DidWeMeetHumidification = false;
         bool DidWePartlyMeetLoad = false;
         Real64 OptimalSetting_RunFractionTotalFuel = IMPLAUSIBLE_POWER;
         Real64 OptimalSetting_RunFractionSupplyTemperature =
@@ -1486,16 +1486,12 @@ namespace HybridEvapCoolingModel {
             }
 
             bool Humidification_load_met = false;
-
-            Real64 RequestedDeHumidificationLoad = StepIns.ZoneDehumidificationLoad;
-            if (DehumidificationRequested && latentRoomORZone > RequestedDeHumidificationLoad) {
+            if (DehumidificationRequested && latentRoomORZone > StepIns.ZoneDehumidificationLoad) {
                 Humidification_load_met = true;
             }
-            Real64 RequestedHumidificationLoad = StepIns.ZoneMoistureLoad;
-            if (HumidificationRequested && latentRoomORZone < RequestedHumidificationLoad) {
+            if (HumidificationRequested && latentRoomORZone < StepIns.ZoneMoistureLoad) {
                 Humidification_load_met = true;
             }
-
             if (!(HumidificationRequested || DehumidificationRequested)) {
                 Humidification_load_met = true;
             }
@@ -1554,10 +1550,10 @@ namespace HybridEvapCoolingModel {
                 if (store_best_performing_mode) {
                     OptimalSetting = thisSetting;
                     DidWeMeetLoad = true;
-                    DidWeMeetHumidificaiton = true;
+                    DidWeMeetHumidification = true;
                 }
             } else {
-                if (!DidWeMeetLoad && !DidWeMeetHumidificaiton) {
+                if (!DidWeMeetLoad && !DidWeMeetHumidification) {
                     bool store_best_attempt = false;
 
                     if (Conditioning_load_met) {
