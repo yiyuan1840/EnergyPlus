@@ -1256,6 +1256,7 @@ namespace HybridEvapCoolingModel {
         Real64 Hma;
         Real64 PreviousMaxiumConditioningOutput = 0;
         Real64 PreviousMaxiumHumidOrDehumidOutput = 0;
+        Real64 PreviousMaxiumVentilationOutput = 0;
         std::string ObjectID = Name.c_str();
         if (StepIns.RHosa > 1) {
             ShowSevereError(state,
@@ -1558,6 +1559,13 @@ namespace HybridEvapCoolingModel {
                             }
                             if (store_best_attempt) {
                                 PreviousMaxiumConditioningOutput = SensibleRoomORZone;
+                            } else {
+                                // Check for a better ventilation-only setting
+                                // Ventilation requirements have already been met or we wouldn't be here (see MinVRMet above)
+                                if (VentilationRequested && thisSetting.Supply_Air_Ventilation_Volume > PreviousMaxiumVentilationOutput) {
+                                    store_best_attempt = true;
+                                    PreviousMaxiumVentilationOutput = thisSetting.Supply_Air_Ventilation_Volume;
+                                }
                             }
                         }
                     }
