@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2026, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-present, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Energy Innovation, LLC, and other
@@ -671,10 +671,10 @@ namespace Sched {
 
             auto const &column_json = schedule_file_shading_result->second["values"].at(0); // assume there is at least 1 column
             rowCnt = column_json.size();
-            int NumCSVAllColumnsSchedules =
-                schedule_file_shading_result->second["header"].get<std::set<std::string>>().size() - 1; // -1 to account for timestamp column
 
             if (schedule_file_shading_result->second["header"].back().get<std::string>() == "()") {
+                int NumCSVAllColumnsSchedules =
+                    schedule_file_shading_result->second["header"].get<std::set<std::string>>().size() - 1; // -1 to account for timestamp column
                 ShowWarningError(state,
                                  format("{}: {}=\"{}\" Removing last column of the CSV since it has '()' for the surface name.",
                                         routineName,
@@ -683,7 +683,6 @@ namespace Sched {
                 ShowContinueError(state, "This was a problem in E+ 22.2.0 and below, consider removing it from the file to suppress this warning.");
                 schedule_file_shading_result->second["header"].erase(NumCSVAllColumnsSchedules);
                 assert(schedule_file_shading_result->second["header"].size() == schedule_file_shading_result->second["values"].size());
-                --NumCSVAllColumnsSchedules;
             }
 
             if (rowCnt != rowLimitCount) {

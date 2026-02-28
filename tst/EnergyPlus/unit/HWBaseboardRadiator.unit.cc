@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2026, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-present, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Energy Innovation, LLC, and other
@@ -108,6 +108,9 @@ TEST_F(EnergyPlusFixture, HWBaseboardRadiator_CalcHWBaseboard)
     state->dataPlnt->PlantLoop(1).FluidName = "Water";
     state->dataPlnt->PlantLoop(1).FluidType = DataLoopNode::NodeFluidType::Water;
     state->dataPlnt->PlantLoop(1).glycol = Fluid::GetWater(*state);
+
+    HWBaseboard(1).plantLoc.loopNum = 1;
+    HWBaseboard(1).plantLoc.loop = &state->dataPlnt->PlantLoop(1);
 
     CalcHWBaseboard(*state, BBNum, LoadMet);
 

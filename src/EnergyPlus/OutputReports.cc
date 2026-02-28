@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2026, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-present, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Energy Innovation, LLC, and other
@@ -153,7 +153,6 @@ void ReportSurfaces(EnergyPlusData &state)
                 DataSurfaceColors::SetUpSchemeColors(state, Option2, "DXF");
             }
             DXFOutWireFrame(state, Option2);
-            DXFDone = true;
         } else {
             ShowWarningError(state, "ReportSurfaces: DXF output already generated.  DXF:WireFrame will not be generated.");
         }
@@ -164,7 +163,6 @@ void ReportSurfaces(EnergyPlusData &state)
         bool VRMLDone = false;
         if (!VRMLDone) {
             VRMLOut(state, Option1, Option2);
-            VRMLDone = true;
         } else {
             ShowWarningError(state, format("ReportSurfaces: VRML output already generated.  VRML with option=[{}] will not be generated.", Option1));
         }

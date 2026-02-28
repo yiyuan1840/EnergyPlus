@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2026, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-present, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Energy Innovation, LLC, and other
@@ -321,7 +321,6 @@ void GetGasAbsorberInput(EnergyPlusData &state)
 
         auto &thisChiller = state.dataChillerGasAbsorption->GasAbsorber(AbsorberNum);
         thisChiller.Name = s_ipsc->cAlphaArgs(1);
-        std::string ChillerName = s_ipsc->cCurrentModuleObject + " Named " + thisChiller.Name;
 
         // Assign capacities
         thisChiller.NomCoolingCap = s_ipsc->rNumericArgs(1);

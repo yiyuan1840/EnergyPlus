@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2026, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-present, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Energy Innovation, LLC, and other
@@ -689,7 +689,6 @@ int InputProcessor::getIntFieldValue(json const &ep_object, json const &schema_o
 
     auto const &schema_field_obj = schema_obj_props[fieldName];
     assert(!schema_field_obj.empty()); // Check that field name exists in the schema for this object type
-    bool isDefaulted = false;
     int value = 0;
     Real64 defaultValue = 0.0;
     auto it = ep_object.find(fieldName);
@@ -702,14 +701,12 @@ int InputProcessor::getIntFieldValue(json const &ep_object, json const &schema_o
             // really is an int then the input processor will have forced it to be an integer.
             assert(!field_value.is_number());
         } else if (field_value.get<std::string>().empty()) {
-            isDefaulted = findDefault(defaultValue, schema_field_obj);
-            if (isDefaulted) {
+            if (findDefault(defaultValue, schema_field_obj)) {
                 value = static_cast<int>(defaultValue);
             }
         }
     } else {
-        isDefaulted = findDefault(defaultValue, schema_field_obj);
-        if (isDefaulted) {
+        if (findDefault(defaultValue, schema_field_obj)) {
             value = static_cast<int>(defaultValue);
         }
     }

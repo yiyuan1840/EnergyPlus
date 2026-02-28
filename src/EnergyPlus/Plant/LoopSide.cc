@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2026, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-present, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Energy Innovation, LLC, and other
@@ -1727,6 +1727,11 @@ namespace DataPlant {
 
                 auto &this_comp(branch.Comp(CompCounter));
                 PlantLocation this_plantLoc = {this->plantLoc.loopNum, this->plantLoc.loopSideNum, BranchCounter, CompCounter};
+                this_plantLoc.loop = &state.dataPlnt->PlantLoop(this_plantLoc.loopNum);
+                this_plantLoc.side = &this_plantLoc.loop->LoopSide(this_plantLoc.loopSideNum);
+                this_plantLoc.branch = &this_plantLoc.side->Branch(this_plantLoc.branchNum);
+                this_plantLoc.comp = &this_plantLoc.branch->Comp(this_plantLoc.compNum);
+
                 DataPlant::OpScheme const CurOpSchemeType(this_comp.CurOpSchemeType);
 
                 switch (CurOpSchemeType) {

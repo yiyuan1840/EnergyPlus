@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2026, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-present, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Energy Innovation, LLC, and other
@@ -185,11 +185,6 @@ namespace RoomAir {
                 auto &afnZoneInfo = state.dataRoomAir->AFNZoneInfo(iZone);
                 if (!afnZoneInfo.IsUsed) {
                     continue;
-                }
-                int NumSurfs = 0; // NumSurfs isn't used anywhere?
-                for (int spaceNum : state.dataHeatBal->Zone(iZone).spaceIndexes) {
-                    auto const &thisSpace = state.dataHeatBal->space(spaceNum);
-                    NumSurfs += thisSpace.HTSurfaceLast - thisSpace.HTSurfaceFirst + 1;
                 }
 
                 for (auto &afnNode : afnZoneInfo.Node) {

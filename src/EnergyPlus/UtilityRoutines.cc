@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2026, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-present, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Energy Innovation, LLC, and other
@@ -232,15 +232,13 @@ namespace Util {
         int Probe = 0;
         int LBnd = 0;
         int UBnd = NumItems + 1;
-        bool Found = false;
-        while ((!Found) || (Probe != 0)) {
+        while (true) {
             Probe = (UBnd - LBnd) / 2;
             if (Probe == 0) {
                 break;
             }
             Probe += LBnd;
             if (equali(String, ListOfItems(Probe))) {
-                Found = true;
                 break;
             }
             if (lessthani(String, ListOfItems(Probe))) {

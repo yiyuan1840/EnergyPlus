@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2026, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-present, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Energy Innovation, LLC, and other
@@ -176,9 +176,6 @@ namespace ThermalComfort {
         state.dataThermalComforts->ThermalComfortData.allocate(state.dataHeatBal->TotPeople);
 
         for (Loop = 1; Loop <= state.dataHeatBal->TotPeople; ++Loop) {
-
-            std::string CurrentGroupName = state.dataHeatBal->People(Loop).Name;
-
             // CurrentModuleObject='People'
             // MJW MRT ToDo: Rename most Zone Thermal Comfort output variables to People Thermal Comfort ('cause they're keyed by People name)
             if (state.dataHeatBal->People(Loop).Fanger) {
@@ -2791,7 +2788,7 @@ namespace ThermalComfort {
                 std::string epwLine;
                 auto epwFile = state.files.inputWeatherFilePath.open(state, "CalcThermalComfortAdaptiveASH55");
                 for (i = 1; i <= 8; ++i) { // Headers
-                    epwLine = epwFile.readLine().data;
+                    epwFile.readLine();
                 }
                 int jStartDay = state.dataEnvrn->DayOfYear - 1;
                 int calcStartDay = jStartDay - 30;
@@ -2837,7 +2834,7 @@ namespace ThermalComfort {
                         state.dataThermalComforts->DailyAveOutTemp(i + 30 - calcEndDay) = state.dataThermalComforts->avgDryBulbASH;
                     }
                     for (i = calcEndHr + 1; i <= calcStartHr - 1; ++i) {
-                        epwLine = epwFile.readLine().data;
+                        epwFile.readLine();
                     }
                     for (i = 1; i <= 30 - calcEndDay; ++i) {
                         state.dataThermalComforts->avgDryBulbASH = 0.0;
