@@ -1,4 +1,4 @@
-// EnergyPlus, Copyright (c) 1996-2026, The Board of Trustees of the University of Illinois,
+// EnergyPlus, Copyright (c) 1996-present, The Board of Trustees of the University of Illinois,
 // The Regents of the University of California, through Lawrence Berkeley National Laboratory
 // (subject to receipt of any required approvals from the U.S. Dept. of Energy), Oak Ridge
 // National Laboratory, managed by UT-Battelle, Alliance for Energy Innovation, LLC, and other
@@ -642,10 +642,10 @@ namespace HybridEvapCoolingModel {
         if (!ok) {
             ShowSevereError(state,
                             EnergyPlus::format("Invalid {}={}Or Invalid{}={}",
-                                   cAlphaFields(inter_Number),
-                                   Alphas(inter_Number),
-                                   cAlphaFields(inter_Number + 1),
-                                   Alphas(inter_Number + 1)));
+                                               cAlphaFields(inter_Number),
+                                               Alphas(inter_Number),
+                                               cAlphaFields(inter_Number + 1),
+                                               Alphas(inter_Number + 1)));
             ShowContinueError(state, EnergyPlus::format("Entered in {}", cCurrentModuleObject));
             ErrorsFound = true;
         }
@@ -655,7 +655,8 @@ namespace HybridEvapCoolingModel {
 
         ok = InitializeOSAFConstraints(Numbers(inter_Number), Numbers(inter_Number + 1));
         if (!ok) {
-            ShowSevereError(state, EnergyPlus::format("Error in OSAFConstraints{}through{}", cAlphaFields(inter_Number), cAlphaFields(inter_Number + 1)));
+            ShowSevereError(state,
+                            EnergyPlus::format("Error in OSAFConstraints{}through{}", cAlphaFields(inter_Number), cAlphaFields(inter_Number + 1)));
             ShowContinueError(state, EnergyPlus::format("Entered in {}", cCurrentModuleObject));
             ErrorsFound = true;
         }
@@ -664,7 +665,8 @@ namespace HybridEvapCoolingModel {
         inter_Number = inter_Number + 2;
         ok = InitializeMsaRatioConstraints(Numbers(inter_Number), Numbers(inter_Number + 1));
         if (!ok) {
-            ShowSevereError(state, EnergyPlus::format("Error in OSAFConstraints{}through{}", cAlphaFields(inter_Number), cAlphaFields(inter_Number + 1)));
+            ShowSevereError(state,
+                            EnergyPlus::format("Error in OSAFConstraints{}through{}", cAlphaFields(inter_Number), cAlphaFields(inter_Number + 1)));
             ShowContinueError(state, EnergyPlus::format("Entered in {}", cCurrentModuleObject));
             ErrorsFound = true;
         }
@@ -930,7 +932,8 @@ namespace HybridEvapCoolingModel {
     Real64 Model::CheckVal_T(EnergyPlusData &state, Real64 T)
     {
         if ((T > 100) || (T < 0)) {
-            ShowWarningError(state, EnergyPlus::format("Supply air temperature exceeded realistic range error called in {}, check performance curve", Name));
+            ShowWarningError(state,
+                             EnergyPlus::format("Supply air temperature exceeded realistic range error called in {}, check performance curve", Name));
         }
         return T;
     }
@@ -1259,15 +1262,17 @@ namespace HybridEvapCoolingModel {
         Real64 PreviousMaxiumVentilationOutput = 0;
         std::string ObjectID = Name.c_str();
         if (StepIns.RHosa > 1) {
-            ShowSevereError(state,
-                            EnergyPlus::format("Unitary hybrid system error, required relative humidity value 0-1, called in object{}.Check inputs", ObjectID));
+            ShowSevereError(
+                state,
+                EnergyPlus::format("Unitary hybrid system error, required relative humidity value 0-1, called in object{}.Check inputs", ObjectID));
             assert(true);
             return -1;
         } // because it should be fractional, this should only really be possible if its called from a unit test
 
         if (StepIns.RHra > 1) {
-            ShowSevereError(state,
-                            EnergyPlus::format("Unitary hybrid system error,  required relative humidity value 0-1, called in object{}.Check inputs", ObjectID));
+            ShowSevereError(
+                state,
+                EnergyPlus::format("Unitary hybrid system error,  required relative humidity value 0-1, called in object{}.Check inputs", ObjectID));
             assert(true);
             return -1;
         } // because it should be fractional, this should only really be possible if its called from a unit test
@@ -1634,38 +1639,42 @@ namespace HybridEvapCoolingModel {
         // day, so report", but that doesn't seem to exist.
         if ((TimeElapsed > 24) && WarnOnceFlag && !state.dataGlobal->WarmupFlag) {
             if (count_EnvironmentConditionsNotMet > 0) {
-                ShowWarningError(state,
-                                 EnergyPlus::format("In day {:.1R} was unable to operate for  of simulation, {}{:.1R} timesteps because environment conditions "
-                                        "were beyond the allowable operating range for any mode.",
-                                        (Real64)state.dataGlobal->DayOfSim,
-                                        Name,
-                                        (Real64)count_EnvironmentConditionsNotMet));
+                ShowWarningError(
+                    state,
+                    EnergyPlus::format("In day {:.1R} was unable to operate for  of simulation, {}{:.1R} timesteps because environment conditions "
+                                       "were beyond the allowable operating range for any mode.",
+                                       (Real64)state.dataGlobal->DayOfSim,
+                                       Name,
+                                       (Real64)count_EnvironmentConditionsNotMet));
             }
             if (count_SAHR_OC_MetOnce > 0) {
-                ShowWarningError(state,
-                                 EnergyPlus::format("In day {:.1R} of simulation, {} failed to meet supply air humidity ratio for {:.1R} time steps. For these "
-                                        "time steps For these time steps was set to mode 0{}",
-                                        (Real64)state.dataGlobal->DayOfSim,
-                                        Name,
-                                        Real64(count_SAHR_OC_MetOnce),
-                                        Name));
+                ShowWarningError(
+                    state,
+                    EnergyPlus::format("In day {:.1R} of simulation, {} failed to meet supply air humidity ratio for {:.1R} time steps. For these "
+                                       "time steps For these time steps was set to mode 0{}",
+                                       (Real64)state.dataGlobal->DayOfSim,
+                                       Name,
+                                       Real64(count_SAHR_OC_MetOnce),
+                                       Name));
             }
             if (count_SAT_OC_MetOnce > 0) {
-                ShowWarningError(state,
-                                 EnergyPlus::format("In day {:.1R} of simulation, {} failed to meet supply air temperature constraints for {:.1R} time steps. "
-                                        "For these time steps For these time steps{} was set to mode 0",
-                                        (Real64)state.dataGlobal->DayOfSim,
-                                        Name,
-                                        Real64(count_SAT_OC_MetOnce),
-                                        Name));
+                ShowWarningError(
+                    state,
+                    EnergyPlus::format("In day {:.1R} of simulation, {} failed to meet supply air temperature constraints for {:.1R} time steps. "
+                                       "For these time steps For these time steps{} was set to mode 0",
+                                       (Real64)state.dataGlobal->DayOfSim,
+                                       Name,
+                                       Real64(count_SAT_OC_MetOnce),
+                                       Name));
             }
 
-            ShowWarningError(state,
-                             EnergyPlus::format("In day {:.1R} of simulation, {} failed to  satisfy sensible load for {:.1R} time steps. For these time steps "
-                                    "settings were selected to provide as much sensible cooling or heating as possible, given other constraints.",
-                                    (Real64)state.dataGlobal->DayOfSim,
-                                    Name,
-                                    (Real64)count_DidWeNotMeetLoad));
+            ShowWarningError(
+                state,
+                EnergyPlus::format("In day {:.1R} of simulation, {} failed to  satisfy sensible load for {:.1R} time steps. For these time steps "
+                                   "settings were selected to provide as much sensible cooling or heating as possible, given other constraints.",
+                                   (Real64)state.dataGlobal->DayOfSim,
+                                   Name,
+                                   (Real64)count_DidWeNotMeetLoad));
 
             count_SAT_OC_MetOnce = 0;
             count_DidWeNotMeetLoad = 0;
@@ -1848,8 +1857,9 @@ namespace HybridEvapCoolingModel {
         CMode Mode = *(OperatingModes.begin());
         if (SetStandByMode(state, Mode, StepIns.Tosa, Wosa, StepIns.Tra, Wra)) {
             std::string ObjectID = Name.c_str();
-            ShowSevereError(state,
-                            EnergyPlus::format("Standby mode not defined correctly, as the mode is defined there are zero combinations of acceptable outside air "
+            ShowSevereError(
+                state,
+                EnergyPlus::format("Standby mode not defined correctly, as the mode is defined there are zero combinations of acceptable outside air "
                                    "fractions and supply air mass flow rate, called in object {}",
                                    ObjectID));
         }
@@ -1923,8 +1933,9 @@ namespace HybridEvapCoolingModel {
                 if (CoolingRequested || HeatingRequested) {
                     ShowSevereError(
                         state,
-                        EnergyPlus::format("Outlet air mass flow rate of zero during period with conditioning need, check mode definition. Called in object {}",
-                               Name));
+                        EnergyPlus::format(
+                            "Outlet air mass flow rate of zero during period with conditioning need, check mode definition. Called in object {}",
+                            Name));
                 }
                 averageOSAF = 1;
             }
