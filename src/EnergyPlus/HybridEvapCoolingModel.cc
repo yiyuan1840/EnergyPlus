@@ -1411,6 +1411,13 @@ namespace HybridEvapCoolingModel {
                                 if (!CoolingRequested && !HeatingRequested && !DehumidificationRequested && !HumidificationRequested) {
                                     CandidateSetting.ScaledSupply_Air_Mass_Flow_Rate =
                                         min(MinOA_Msa, CandidateSetting.ScaledSupply_Air_Mass_Flow_Rate);
+                                    // Update Supply_Air_Ventilation_Volume to match the clamped flow so that
+                                    // CalculatePartRuntimeFraction (which uses Supply_Air_Ventilation_Volume * StdRhoAir as Mvent)
+                                    // computes a runtime fraction based on the post-clamp flow. Without this update, the runtime is
+                                    // computed from the pre-clamp Mvent and applied to the post-clamp ScaledSupply, producing
+                                    // time-averaged OA delivery below the DSOA requirement (e.g., 68% of MinOA when MsaRatio=0.20).
+                                    CandidateSetting.Supply_Air_Ventilation_Volume =
+                                        CandidateSetting.ScaledSupply_Air_Mass_Flow_Rate * OSAF / state.dataEnvrn->StdRhoAir;
                                     // add fan heat if not included in lookup tables for supply air stream
                                     Tsa = StepIns.Tosa + FanHeatTemp;
                                 }
