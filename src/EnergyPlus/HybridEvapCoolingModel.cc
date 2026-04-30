@@ -1326,6 +1326,9 @@ namespace HybridEvapCoolingModel {
                         Real64 OSAF = Mode.sol.OutdoorAirFraction[indexOutdoorAirFraction];
                         Real64 ScaledMsa = ScaledSystemMaximumSupplyAirMassFlowRate * MsaRatio;
                         Real64 UnscaledMsa = ScaledSystemMaximumSupplyAirMassFlowRate / ScalingFactor;
+                        // CurveMsa: the MFR independent variable passed to lookup tables. Operating MFR (= MsaRatio*UnscaledMsa)
+                        // makes the lookup tables behave as performance maps; rated max preserves legacy behavior.
+                        Real64 CurveMsa = LookupCurvesUseOperatingMsa ? (MsaRatio * UnscaledMsa) : UnscaledMsa;
                         Real64 Supply_Air_Ventilation_Volume = 0;
                         // Calculate the ventilation mass flow rate
                         Real64 Mvent = ScaledMsa * OSAF;
@@ -1347,7 +1350,7 @@ namespace HybridEvapCoolingModel {
                             StepIns.Tosa = SecInletTemp;
                             StepIns.Tra = InletTemp;
                             Real64 FanPower =
-                                Mode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, UnscaledMsa, OSAF, SUPPLY_FAN_POWER) *
+                                Mode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, CurveMsa, OSAF, SUPPLY_FAN_POWER) *
                                 ScalingFactor;
 
                             // calculate power loss to air if in mixed air stream and divide fan heat between outside air stream and return air stream
@@ -1364,9 +1367,9 @@ namespace HybridEvapCoolingModel {
                             }
 
                             // Calculate prospective supply air temperature
-                            Tsa = Mode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, UnscaledMsa, OSAF, TEMP_CURVE);
+                            Tsa = Mode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, CurveMsa, OSAF, TEMP_CURVE);
                             // Calculate prospective supply air Humidity Ratio
-                            Wsa = Mode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, UnscaledMsa, OSAF, W_CURVE);
+                            Wsa = Mode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, CurveMsa, OSAF, W_CURVE);
 
                             // calculate power loss to supply air stream from fan power determined by curve value and fraction of fan heat in air
                             // stream
@@ -1401,6 +1404,7 @@ namespace HybridEvapCoolingModel {
                                 CandidateSetting.Supply_Air_Mass_Flow_Rate_Ratio = MsaRatio;
                                 CandidateSetting.Unscaled_Supply_Air_Mass_Flow_Rate = UnscaledMsa;
                                 CandidateSetting.ScaledSupply_Air_Mass_Flow_Rate = ScaledMsa;
+                                CandidateSetting.CurveMsa = CurveMsa;
 
                                 // If no load is requested but ventilation is required, set the supply air mass flow rate to the minimum of the
                                 // required ventilation flow rate and the maximum supply air flow rate
@@ -1439,6 +1443,7 @@ namespace HybridEvapCoolingModel {
             // Calculate the delta H
             Real64 OSAF = thisSetting.Outdoor_Air_Fraction;
             Real64 UnscaledMsa = thisSetting.Unscaled_Supply_Air_Mass_Flow_Rate;
+            Real64 CurveMsa = thisSetting.CurveMsa;
             Real64 ScaledMsa = thisSetting.ScaledSupply_Air_Mass_Flow_Rate;
 
             // send the scaled Msa to calculate energy and the unscaled for sending to curves.
@@ -1514,17 +1519,17 @@ namespace HybridEvapCoolingModel {
             }
 
             thisSetting.ElectricalPower = thisSetting.oMode.CalculateCurveVal(
-                state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, UnscaledMsa, OSAF, POWER_CURVE); // [Kw] calculations for fuel in Kw
+                state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, CurveMsa, OSAF, POWER_CURVE); // [Kw] calculations for fuel in Kw
             thisSetting.SupplyFanElectricPower =
-                thisSetting.oMode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, UnscaledMsa, OSAF, SUPPLY_FAN_POWER);
+                thisSetting.oMode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, CurveMsa, OSAF, SUPPLY_FAN_POWER);
             thisSetting.ExternalStaticPressure =
-                thisSetting.oMode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, UnscaledMsa, OSAF, EXTERNAL_STATIC_PRESSURE);
+                thisSetting.oMode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, CurveMsa, OSAF, EXTERNAL_STATIC_PRESSURE);
             thisSetting.SecondaryFuelConsumptionRate =
-                thisSetting.oMode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, UnscaledMsa, OSAF, SECOND_FUEL_USE);
+                thisSetting.oMode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, CurveMsa, OSAF, SECOND_FUEL_USE);
             thisSetting.ThirdFuelConsumptionRate =
-                thisSetting.oMode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, UnscaledMsa, OSAF, THIRD_FUEL_USE);
+                thisSetting.oMode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, CurveMsa, OSAF, THIRD_FUEL_USE);
             thisSetting.WaterConsumptionRate =
-                thisSetting.oMode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, UnscaledMsa, OSAF, WATER_USE);
+                thisSetting.oMode.CalculateCurveVal(state, StepIns.Tosa, Wosa, StepIns.Tra, Wra, CurveMsa, OSAF, WATER_USE);
 
             // Calculate partload fraction required to meet all requirements
             Real64 PartRuntimeFraction = 0;

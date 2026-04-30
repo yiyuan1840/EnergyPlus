@@ -187,10 +187,10 @@ namespace HybridEvapCoolingModel {
     public:
         CSetting()
             : Runtime_Fraction(0), Mode(0), Outdoor_Air_Fraction(0), Unscaled_Supply_Air_Mass_Flow_Rate(0), ScaledSupply_Air_Mass_Flow_Rate(0),
-              Supply_Air_Ventilation_Volume(0), ScaledSupply_Air_Ventilation_Volume(0), Supply_Air_Mass_Flow_Rate_Ratio(0), SupplyAirTemperature(0),
-              Mixed_Air_Temperature(0), SupplyAirW(0), Mixed_Air_W(0), TotalSystem(0), SensibleSystem(0), LatentSystem(0), TotalZone(0),
-              SensibleZone(0), LatentZone(0), ElectricalPower(IMPLAUSIBLE_POWER), SupplyFanElectricPower(0), SecondaryFuelConsumptionRate(0),
-              ThirdFuelConsumptionRate(0), WaterConsumptionRate(0), ExternalStaticPressure(0)
+              CurveMsa(0), Supply_Air_Ventilation_Volume(0), ScaledSupply_Air_Ventilation_Volume(0), Supply_Air_Mass_Flow_Rate_Ratio(0),
+              SupplyAirTemperature(0), Mixed_Air_Temperature(0), SupplyAirW(0), Mixed_Air_W(0), TotalSystem(0), SensibleSystem(0), LatentSystem(0),
+              TotalZone(0), SensibleZone(0), LatentZone(0), ElectricalPower(IMPLAUSIBLE_POWER), SupplyFanElectricPower(0),
+              SecondaryFuelConsumptionRate(0), ThirdFuelConsumptionRate(0), WaterConsumptionRate(0), ExternalStaticPressure(0)
         {
         }
         Real64 Runtime_Fraction;
@@ -198,6 +198,7 @@ namespace HybridEvapCoolingModel {
         Real64 Outdoor_Air_Fraction;
         Real64 Unscaled_Supply_Air_Mass_Flow_Rate;
         Real64 ScaledSupply_Air_Mass_Flow_Rate;
+        Real64 CurveMsa; // MFR value passed to CalculateCurveVal for this Setting (rated max OR operating MFR depending on Model::LookupCurvesUseOperatingMsa)
         Real64 Supply_Air_Ventilation_Volume;
         Real64 ScaledSupply_Air_Ventilation_Volume;
         Real64 Supply_Air_Mass_Flow_Rate_Ratio;
@@ -260,6 +261,10 @@ namespace HybridEvapCoolingModel {
         std::string FanHeatGainLocation;                 // Fan heat gain location
         Real64 FanHeatInAirFrac;                         // the fraction of fan heat in air stream to calculate fan heat gain if not in lookup tables
         Real64 ScalingFactor;                            // taken from IDF N3, linear scaling factor.
+        bool LookupCurvesUseOperatingMsa = true;         // If true, evaluate per-mode lookup curves at the operating supply air mass flow rate
+                                                         // (= MFR Ratio x Rated Max), rather than the rated max. NOTE: temporarily defaulting to
+                                                         // true on this branch to validate the fix end-to-end before adding the IDD opt-in field.
+                                                         // Will be flipped back to false (with IDD field opt-in) once validation passes.
         Real64 ScaledSystemMaximumSupplyAirMassFlowRate; // the scaled system max supply mass flow rate in m3/s.
         Real64 ScaledSystemMaximumSupplyAirVolumeFlowRate;     // the scaled system max supply volume flow rate in m3/s.
         Constant::eFuel firstFuel = Constant::eFuel::Invalid;  // First fuel type, currently electricity is only option

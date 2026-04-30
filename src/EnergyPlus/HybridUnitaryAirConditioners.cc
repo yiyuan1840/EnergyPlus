@@ -1275,10 +1275,13 @@ void GetInputZoneHybridUnitaryAirConditioners(EnergyPlusData &state, bool &Error
                                 OutputProcessor::TimeStepType::Zone,
                                 OutputProcessor::StoreType::Average,
                                 hybridUnitaryAC.Name);
+            // Bind to ScaledSupply_Air_Mass_Flow_Rate (operating MFR) instead of Unscaled_Supply_Air_Mass_Flow_Rate (rated max).
+            // The variable name "Supply Air Mass Flow Rate in Setting N" implies operating MFR for the chosen setting; binding to
+            // rated max produced a constant value regardless of MFR Ratio, which was misleading.
             SetupOutputVariable(state,
                                 format("Zone Hybrid Unitary HVAC Supply Air Mass Flow Rate in Setting {}", index),
                                 Constant::Units::kg_s,
-                                thisSetting.Unscaled_Supply_Air_Mass_Flow_Rate,
+                                thisSetting.ScaledSupply_Air_Mass_Flow_Rate,
                                 OutputProcessor::TimeStepType::Zone,
                                 OutputProcessor::StoreType::Average,
                                 hybridUnitaryAC.Name);
