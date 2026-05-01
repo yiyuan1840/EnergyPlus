@@ -1406,9 +1406,21 @@ namespace HybridEvapCoolingModel {
                                 CandidateSetting.ScaledSupply_Air_Mass_Flow_Rate = ScaledMsa;
                                 CandidateSetting.CurveMsa = CurveMsa;
 
-                                // If no load is requested but ventilation is required, set the supply air mass flow rate to the minimum of the
+                                // Detect "passthrough" candidates whose lookup-derived SAT is essentially the mixed-air
+                                // temperature — meaning the mode does no active thermal work regardless of MFR Ratio
+                                // (e.g., Mode 1 vent-only with identity SAT lookup). The fallback tiebreaker introduced
+                                // by commit ba40deea44 ("Check for better ventilation-only setting") otherwise picks the
+                                // *highest* feasible MFR for such candidates whenever the zone has any thermal request,
+                                // delivering far more OA than DSOA. This causes a heating penalty with no offsetting benefit
+                                // when downstream trim equipment (e.g., a PTHP) is responsible for the thermal load.
+                                Real64 Tma_local = StepIns.Tra + OSAF * (StepIns.Tosa - StepIns.Tra);
+                                bool isPassthroughMode = std::abs(Tsa - Tma_local) < 0.5; // 0.5°C tolerance
+
+                                // If no load is requested but ventilation is required, OR the candidate is a passthrough
+                                // (vent-only) mode, set the supply air mass flow rate to the minimum of the
                                 // required ventilation flow rate and the maximum supply air flow rate
-                                if (!CoolingRequested && !HeatingRequested && !DehumidificationRequested && !HumidificationRequested) {
+                                if ((!CoolingRequested && !HeatingRequested && !DehumidificationRequested && !HumidificationRequested) ||
+                                    isPassthroughMode) {
                                     CandidateSetting.ScaledSupply_Air_Mass_Flow_Rate =
                                         min(MinOA_Msa, CandidateSetting.ScaledSupply_Air_Mass_Flow_Rate);
                                     // Update Supply_Air_Ventilation_Volume to match the clamped flow so that
@@ -1418,6 +1430,11 @@ namespace HybridEvapCoolingModel {
                                     // time-averaged OA delivery below the DSOA requirement (e.g., 68% of MinOA when MsaRatio=0.20).
                                     CandidateSetting.Supply_Air_Ventilation_Volume =
                                         CandidateSetting.ScaledSupply_Air_Mass_Flow_Rate * OSAF / state.dataEnvrn->StdRhoAir;
+                                    // Also update CurveMsa so the second-loop fan-power/electrical-power lookups evaluate
+                                    // at the post-clamp delivered flow, not the pre-clamp candidate flow.
+                                    if (LookupCurvesUseOperatingMsa) {
+                                        CandidateSetting.CurveMsa = CandidateSetting.ScaledSupply_Air_Mass_Flow_Rate / ScalingFactor;
+                                    }
                                     // add fan heat if not included in lookup tables for supply air stream
                                     Tsa = StepIns.Tosa + FanHeatTemp;
                                 }
